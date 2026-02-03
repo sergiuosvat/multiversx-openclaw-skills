@@ -39,7 +39,7 @@ MOCK_PEM_CONTENT
         expect(result).toBe('0xhash');
         expect(axios.post).toHaveBeenCalledWith('http://localhost:3000/transactions', expect.any(Object));
 
-        // Data Verification: submitProof@jobHex@hash
+        // Data Verification: submit_proof@jobHex@hash
         const postCall = (axios.post as jest.Mock).mock.calls[0][1];
         expect(postCall.data).toBeDefined();
     });

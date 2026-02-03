@@ -28,9 +28,9 @@ export async function prove(input: ProveInput): Promise<string> {
     const registryAddress = input.registryAddress || process.env.MULTIVERSX_VALIDATION_REGISTRY;
     if (!registryAddress) throw new Error("Validation Registry Address not configured");
 
-    // Construct Data: submitProof@<job_id_hex>@<hash>
+    // Construct Data: submit_proof@<job_id_hex>@<hash>
     const jobIdHex = Buffer.from(input.jobId).toString('hex');
-    const data = `submitProof@${jobIdHex}@${input.resultHash}`;
+    const data = `submit_proof@${jobIdHex}@${input.resultHash}`;
 
     const tx = new Transaction({
         nonce: 0,
