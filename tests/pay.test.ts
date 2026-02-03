@@ -1,10 +1,8 @@
 import { pay } from '../src/pay';
 import { UserSigner } from '@multiversx/sdk-wallet';
 import { ApiNetworkProvider } from '@multiversx/sdk-network-providers';
-import { Address } from '@multiversx/sdk-core';
 import { promises as fs } from 'fs';
 import axios from 'axios';
-import BigNumber from 'bignumber.js';
 
 jest.mock('axios');
 jest.mock('fs', () => ({
@@ -39,6 +37,7 @@ MOCK_PEM_CONTENT
             getAddress: () => ({ bech32: () => mockAddress }),
             sign: jest.fn().mockResolvedValue(Buffer.from('signature'))
         };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         jest.spyOn(UserSigner, 'fromPem').mockReturnValue(mockSigner as any);
 
         // Mock Config response
@@ -66,6 +65,7 @@ MOCK_PEM_CONTENT
         (axios.get as jest.Mock).mockRejectedValue(new Error("Network Error"));
 
         const mockSigner = { getAddress: () => ({ bech32: () => mockAddress }) };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         jest.spyOn(UserSigner, 'fromPem').mockReturnValue(mockSigner as any);
 
         await expect(pay({

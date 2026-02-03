@@ -1,6 +1,5 @@
 import { sign } from '../src/sign';
 import { UserSigner } from '@multiversx/sdk-wallet';
-import { Transaction, Address } from '@multiversx/sdk-core';
 import { promises as fs } from 'fs';
 
 jest.mock('fs', () => ({
@@ -26,6 +25,7 @@ MOCK_PEM_CONTENT
             getAddress: () => ({ bech32: () => sender }),
             sign: jest.fn().mockResolvedValue(Buffer.from('signature'))
         };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         jest.spyOn(UserSigner, 'fromPem').mockReturnValue(mockSigner as any);
 
         const txInput = {
@@ -42,6 +42,7 @@ MOCK_PEM_CONTENT
         };
 
         const result = await sign({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             transaction: txInput as any,
             walletPath: 'dummy.pem'
         });
@@ -56,6 +57,7 @@ MOCK_PEM_CONTENT
         const mockSigner = {
             getAddress: () => ({ bech32: () => sender }),
         };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         jest.spyOn(UserSigner, 'fromPem').mockReturnValue(mockSigner as any);
 
         const txInput = {
@@ -71,6 +73,7 @@ MOCK_PEM_CONTENT
         };
 
         await expect(sign({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             transaction: txInput as any,
             walletPath: 'dummy.pem'
         })).rejects.toThrow(/does not match/);

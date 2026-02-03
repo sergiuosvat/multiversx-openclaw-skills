@@ -2,6 +2,7 @@ import { UserSigner } from '@multiversx/sdk-wallet';
 import { Transaction, TransactionPayload, Address } from '@multiversx/sdk-core';
 import { promises as fs } from 'fs';
 import axios from 'axios';
+import { DEFAULT_MCP_URL, DEFAULT_CHAIN_ID, PROVE_GAS_LIMIT } from './constants';
 
 interface ProveInput {
     jobId: string;
@@ -35,15 +36,16 @@ export async function prove(input: ProveInput): Promise<string> {
         nonce: 0,
         value: "0",
         receiver: new Address(registryAddress),
-        gasLimit: 10000000n, // Estimated gas for storage write
-        chainID: "D", // TODO: Configurable
+        gasLimit: BigInt(PROVE_GAS_LIMIT),
+        chainID: process.env.MULTIVERSX_CHAIN_ID || DEFAULT_CHAIN_ID,
         data: new TransactionPayload(data),
         sender: new Address(signer.getAddress().bech32())
     });
 
-    // Fetch Nonce (Reuse logic or helper)
+    const mcpUrl = process.env.MULTIVERSX_MCP_URL || DEFAULT_MCP_URL;
+
+    // Fetch Nonce
     try {
-        const mcpUrl = process.env.MULTIVERSX_MCP_URL || 'http://localhost:3000';
         const nonceResp = await axios.get(`${mcpUrl}/accounts/${signer.getAddress().bech32()}`);
         tx.setNonce(BigInt(nonceResp.data.nonce || 0));
     } catch (e) {
@@ -55,12 +57,10 @@ export async function prove(input: ProveInput): Promise<string> {
     tx.applySignature(signature);
 
     // Broadcast via MCP or Relayer
-    // Assuming MCP has a broadcast endpoint or we use the relayer for everything
-    const mcpUrl = process.env.MULTIVERSX_MCP_URL || 'http://localhost:3000';
     try {
         const response = await axios.post(`${mcpUrl}/transactions`, tx.toPlainObject());
         return response.data.txHash;
-    } catch (err: any) {
+    } catch (err: unknown) {
         // Fallback to Relayer if MCP doesn't support direct broadcast
         const relayerUrl = process.env.MULTIVERSX_RELAY_URL;
         if (relayerUrl) {

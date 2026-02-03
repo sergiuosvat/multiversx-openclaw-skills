@@ -4,6 +4,15 @@ import { Transaction, TransactionPayload, Address } from '@multiversx/sdk-core';
 import { ApiNetworkProvider } from '@multiversx/sdk-network-providers';
 import { promises as fs } from 'fs';
 import BigNumber from 'bignumber.js';
+import {
+    DEFAULT_MCP_URL,
+    DEFAULT_CHAIN_ID,
+    BASE_GAS_LIMIT,
+    GAS_PER_DATA_BYTE,
+    SC_CALL_MIN_GAS,
+    ESDT_TRANSFER_GAS,
+    RELAYED_V3_EXTRA_GAS
+} from './constants';
 
 interface PayInput {
     paymentHeader: string;
@@ -59,7 +68,7 @@ export async function pay(input: PayInput): Promise<string> {
     }
 
     // 2. Setup Provider & Signer
-    const mcpUrl = process.env.MULTIVERSX_MCP_URL || 'http://localhost:3000';
+    const mcpUrl = process.env.MULTIVERSX_MCP_URL || DEFAULT_MCP_URL;
     const provider = new ApiNetworkProvider(mcpUrl);
 
     const pemPath = input.walletPath || process.env.MULTIVERSX_PRIVATE_KEY;
@@ -85,8 +94,10 @@ export async function pay(input: PayInput): Promise<string> {
             } else {
                 throw new Error("Invalid config response structure");
             }
-        } catch (e: any) {
-            throw new Error(`Failed to discover Relayer Address from ${relayerUrl}: ${e.message}`);
+        } catch (e: unknown) {
+            let message = 'Unknown error';
+            if (e instanceof Error) message = e.message;
+            throw new Error(`Failed to discover Relayer Address from ${relayerUrl}: ${message}`);
         }
     }
 
@@ -126,11 +137,8 @@ export async function pay(input: PayInput): Promise<string> {
         value = "0";
 
         // Gas Calculation
-        // Base: 50000 + 1500 * L
-        // SC Min: 6,000,000
-        // ESDT Extra: 200,000
-        const dataCost = 50000 + 1500 * payload.length();
-        gasLimit = dataCost + 6000000 + 200000;
+        const dataCost = BASE_GAS_LIMIT + GAS_PER_DATA_BYTE * payload.length();
+        gasLimit = dataCost + SC_CALL_MIN_GAS + ESDT_TRANSFER_GAS;
 
     } else {
         // EGLD Transfer with SC Call
@@ -139,19 +147,19 @@ export async function pay(input: PayInput): Promise<string> {
         value = request.amount;
 
         // Gas Calculation
-        const dataCost = 50000 + 1500 * payload.length();
-        gasLimit = dataCost + 6000000;
+        const dataCost = BASE_GAS_LIMIT + GAS_PER_DATA_BYTE * payload.length();
+        gasLimit = dataCost + SC_CALL_MIN_GAS;
     }
 
     // Relayed V3 Extra Gas
-    gasLimit += 50000;
+    gasLimit += RELAYED_V3_EXTRA_GAS;
 
     const tx = new Transaction({
         nonce: account.nonce,
         value: value,
         receiver: new Address(request.target),
         gasLimit: BigInt(gasLimit),
-        chainID: "D",
+        chainID: process.env.MULTIVERSX_CHAIN_ID || DEFAULT_CHAIN_ID,
         data: payload,
         sender: senderAddress,
         relayer: relayerAddress // Set Relayer for V3 logic (signature verification)
@@ -162,7 +170,6 @@ export async function pay(input: PayInput): Promise<string> {
     tx.applySignature(signature);
 
     // 7. Send to Relayer
-    // Note: RelayerV3 expects the plain object with the `relayer` field populated.
     const response = await axios.post(`${relayerUrl}/transaction/send`, {
         transaction: tx.toPlainObject()
     });

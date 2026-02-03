@@ -5,7 +5,9 @@
     "main": "dist/index.js",
     "scripts": {
         "build": "tsc",
-        "test": "jest"
+        "build": "tsc",
+        "test": "jest",
+        "lint": "eslint . --ext .ts"
     },
     "keywords": [
         "multiversx",
@@ -27,6 +29,9 @@
         "@types/node": "^20.0.0",
         "@types/jest": "^29.0.0",
         "jest": "^29.0.0",
-        "ts-jest": "^29.0.0"
+        "ts-jest": "^29.0.0",
+        "eslint": "^8.52.0",
+        "@typescript-eslint/parser": "^6.9.0",
+        "@typescript-eslint/eslint-plugin": "^6.9.0"
     }
 }

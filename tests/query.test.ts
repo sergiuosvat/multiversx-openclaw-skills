@@ -18,7 +18,9 @@ describe('MultiversX Query Skill', () => {
     });
 
     it('should handle errors gracefully', async () => {
-        mockedAxios.get.mockRejectedValue({ response: { status: 404, data: { error: "Not Found" } } });
+        const mockError = { response: { status: 404, data: { error: "Not Found" } } };
+        mockedAxios.get.mockRejectedValue(mockError);
+        mockedAxios.isAxiosError.mockReturnValue(true);
 
         await expect(query({ endpoint: '/bad' }))
             .rejects

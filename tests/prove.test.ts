@@ -1,6 +1,5 @@
 import { prove } from '../src/prove';
 import { UserSigner } from '@multiversx/sdk-wallet';
-import { Transaction } from '@multiversx/sdk-core';
 import { promises as fs } from 'fs';
 import axios from 'axios';
 
@@ -28,6 +27,7 @@ MOCK_PEM_CONTENT
             getAddress: () => ({ bech32: () => 'erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu' }),
             sign: jest.fn().mockResolvedValue(Buffer.from('signature'))
         };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         jest.spyOn(UserSigner, 'fromPem').mockReturnValue(mockSigner as any);
 
         const result = await prove({
@@ -41,14 +41,6 @@ MOCK_PEM_CONTENT
 
         // Data Verification: submitProof@jobHex@hash
         const postCall = (axios.post as jest.Mock).mock.calls[0][1];
-        const data = Buffer.from(postCall.data, 'base64').toString();
-        // Note: sdk-core might encode payload as base64 in toPlainObject() or string.
-        // Usually plain object data is base64 encoded string.
-
-        // Let's decode or check properties
-        // data: 'c3VibWl0UHJvb2ZANmFNmIyLWQxMjNAMYWJjZGVmMTIzNDU2' or similar
-        // For simplicity we trust Transaction builder logic, or check `tx.data` before serialization if we could spy on Transaction constructor.
-        // We can't easily spy on Transaction constructor here without refactor.
-        // We assume it's correct via integration or deeper mock.
+        expect(postCall.data).toBeDefined();
     });
 });
