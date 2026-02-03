@@ -78,7 +78,7 @@ export async function pay(input: PayInput): Promise<string> {
     // Dynamic Discovery: If address not provided, fetch from Relayer Config
     if (!relayerAddressStr) {
         try {
-            console.log(`Fetching Relayer Address from ${relayerUrl}/config...`);
+            console.log(`[MultiversX:Pay] Fetching Relayer Address from ${relayerUrl}/config...`);
             const configResp = await axios.get(`${relayerUrl}/config`);
             if (configResp.data && configResp.data.relayerAddress) {
                 relayerAddressStr = configResp.data.relayerAddress;
