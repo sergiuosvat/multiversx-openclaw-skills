@@ -85,14 +85,15 @@ export async function pay(input: PayInput): Promise<string> {
     let relayerAddressStr = input.relayerAddress || process.env.MULTIVERSX_RELAYER_ADDRESS;
 
     // Dynamic Discovery: If address not provided, fetch from Relayer Config
+    // Dynamic Discovery: If address not provided, fetch from Relayer Config
     if (!relayerAddressStr) {
         try {
-            console.log(`[MultiversX:Pay] Fetching Relayer Address from ${relayerUrl}/config...`);
-            const configResp = await axios.get(`${relayerUrl}/config`);
-            if (configResp.data && configResp.data.relayerAddress) {
-                relayerAddressStr = configResp.data.relayerAddress;
+            console.log(`[MultiversX:Pay] Fetching Relayer Address for ${senderAddress.bech32()} from ${relayerUrl}...`);
+            const relayerResp = await axios.get(`${relayerUrl}/relayer/address/${senderAddress.bech32()}`);
+            if (relayerResp.data && relayerResp.data.relayerAddress) {
+                relayerAddressStr = relayerResp.data.relayerAddress;
             } else {
-                throw new Error("Invalid config response structure");
+                throw new Error("Invalid config response structure: missing relayerAddress");
             }
         } catch (e: unknown) {
             let message = 'Unknown error';
