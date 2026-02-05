@@ -1,5 +1,5 @@
 import { UserSigner } from '@multiversx/sdk-wallet';
-import { Transaction, TransactionPayload, Address } from '@multiversx/sdk-core';
+import { Transaction, Address, TransactionComputer } from '@multiversx/sdk-core';
 import { promises as fs } from 'fs';
 import axios from 'axios';
 import { DEFAULT_MCP_URL, DEFAULT_CHAIN_ID, PROVE_GAS_LIMIT } from './constants';
@@ -18,6 +18,7 @@ interface ProveInput {
  * @returns Transaction Hash
  */
 export async function prove(input: ProveInput): Promise<string> {
+    const txComputer = new TransactionComputer();
     const pemPath = input.walletPath || process.env.MULTIVERSX_PRIVATE_KEY;
     if (!pemPath) throw new Error("Wallet path not found");
 
@@ -33,12 +34,12 @@ export async function prove(input: ProveInput): Promise<string> {
     const data = `submit_proof@${jobIdHex}@${input.resultHash}`;
 
     const tx = new Transaction({
-        nonce: 0,
-        value: "0",
+        nonce: 0n,
+        value: 0n,
         receiver: new Address(registryAddress),
         gasLimit: BigInt(PROVE_GAS_LIMIT),
         chainID: process.env.MULTIVERSX_CHAIN_ID || DEFAULT_CHAIN_ID,
-        data: new TransactionPayload(data),
+        data: Buffer.from(data),
         sender: new Address(signer.getAddress().bech32())
     });
 
@@ -47,14 +48,14 @@ export async function prove(input: ProveInput): Promise<string> {
     // Fetch Nonce
     try {
         const nonceResp = await axios.get(`${mcpUrl}/accounts/${signer.getAddress().bech32()}`);
-        tx.setNonce(BigInt(nonceResp.data.nonce || 0));
+        tx.nonce = BigInt(nonceResp.data.nonce || 0);
     } catch (e) {
         console.warn("Could not fetch nonce, using 0");
-        tx.setNonce(0n);
+        tx.nonce = 0n;
     }
 
-    const signature = await signer.sign(tx.serializeForSigning());
-    tx.applySignature(signature);
+    const signature = await signer.sign(txComputer.computeBytesForSigning(tx));
+    tx.signature = signature;
 
     // Broadcast via MCP or Relayer
     try {

@@ -1,5 +1,5 @@
 import { UserSigner } from '@multiversx/sdk-wallet';
-import { Transaction, IPlainTransactionObject } from '@multiversx/sdk-core';
+import { Transaction, IPlainTransactionObject, TransactionComputer } from '@multiversx/sdk-core';
 import { promises as fs } from 'fs';
 
 interface SignInput {
@@ -22,15 +22,16 @@ export async function sign(input: SignInput): Promise<IPlainTransactionObject> {
     const userAddress = signer.getAddress();
 
     // Reconstruct transaction from plain object to ensure validity
-    const tx = Transaction.fromPlainObject(input.transaction);
+    const tx = Transaction.newFromPlainObject(input.transaction);
 
     // Verify sender matches signer
-    if (tx.getSender().bech32() !== userAddress.bech32()) {
-        throw new Error(`Signer address ${userAddress.bech32()} does not match transaction sender ${tx.getSender().bech32()}`);
+    if (tx.sender.toBech32() !== userAddress.bech32()) {
+        throw new Error(`Signer address ${userAddress.bech32()} does not match transaction sender ${tx.sender.toBech32()}`);
     }
 
-    const signature = await signer.sign(tx.serializeForSigning());
-    tx.applySignature(signature);
+    const txComputer = new TransactionComputer();
+    const signature = await signer.sign(txComputer.computeBytesForSigning(tx));
+    tx.signature = signature;
 
     return tx.toPlainObject();
 }

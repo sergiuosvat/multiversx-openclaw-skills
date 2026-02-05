@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { UserSigner } from '@multiversx/sdk-wallet';
-import { Transaction, TransactionPayload, Address } from '@multiversx/sdk-core';
+import { Transaction, Address, TransactionComputer } from '@multiversx/sdk-core';
 import { ApiNetworkProvider } from '@multiversx/sdk-network-providers';
 import { promises as fs } from 'fs';
 import BigNumber from 'bignumber.js';
@@ -56,6 +56,7 @@ function parseX402Header(header: string): PaymentRequest {
 }
 
 export async function pay(input: PayInput): Promise<string> {
+    const txComputer = new TransactionComputer();
     const request = parseX402Header(input.paymentHeader);
 
     // 1. Budget Check
@@ -88,8 +89,8 @@ export async function pay(input: PayInput): Promise<string> {
     // Dynamic Discovery: If address not provided, fetch from Relayer Config
     if (!relayerAddressStr) {
         try {
-            console.log(`[MultiversX:Pay] Fetching Relayer Address for ${senderAddress.bech32()} from ${relayerUrl}...`);
-            const relayerResp = await axios.get(`${relayerUrl}/relayer/address/${senderAddress.bech32()}`);
+            console.log(`[MultiversX:Pay] Fetching Relayer Address for ${senderAddress.toBech32()} from ${relayerUrl}...`);
+            const relayerResp = await axios.get(`${relayerUrl}/relayer/address/${senderAddress.toBech32()}`);
             if (relayerResp.data && relayerResp.data.relayerAddress) {
                 relayerAddressStr = relayerResp.data.relayerAddress;
             } else {
@@ -109,11 +110,11 @@ export async function pay(input: PayInput): Promise<string> {
 
 
     // 4. Fetch Account State (Nonce)
-    const account = await provider.getAccount(senderAddress);
+    const account = await provider.getAccount({ bech32: () => senderAddress.toBech32() });
 
     // 5. Construct Transaction & Gas Logic
-    let payload: TransactionPayload;
-    let value: string;
+    let payload: Buffer;
+    let value: bigint;
     let gasLimit = 0;
 
     const token = request.token.toUpperCase();
@@ -122,7 +123,7 @@ export async function pay(input: PayInput): Promise<string> {
     if (isEsdt) {
         // MultiESDTNFTTransfer Construction
         const destination = new Address(request.target);
-        const destHex = destination.hex();
+        const destHex = destination.toHex();
         const numTransfers = '01';
         const tokenHex = Buffer.from(request.token).toString('hex');
         const nonceHex = '00';
@@ -134,21 +135,21 @@ export async function pay(input: PayInput): Promise<string> {
         const tokenArgHex = Buffer.from(request.token).toString('hex');
 
         const dataString = `MultiESDTNFTTransfer@${destHex}@${numTransfers}@${tokenHex}@${nonceHex}@${amountHex}@${funcHex}@${tokenArgHex}`;
-        payload = new TransactionPayload(dataString);
-        value = "0";
+        payload = Buffer.from(dataString);
+        value = 0n;
 
         // Gas Calculation
-        const dataCost = BASE_GAS_LIMIT + GAS_PER_DATA_BYTE * payload.length();
+        const dataCost = BASE_GAS_LIMIT + GAS_PER_DATA_BYTE * payload.length;
         gasLimit = dataCost + SC_CALL_MIN_GAS + ESDT_TRANSFER_GAS;
 
     } else {
         // EGLD Transfer with SC Call
         const dataString = "x402-pay " + request.token;
-        payload = new TransactionPayload(dataString);
-        value = request.amount;
+        payload = Buffer.from(dataString);
+        value = BigInt(request.amount);
 
         // Gas Calculation
-        const dataCost = BASE_GAS_LIMIT + GAS_PER_DATA_BYTE * payload.length();
+        const dataCost = BASE_GAS_LIMIT + GAS_PER_DATA_BYTE * payload.length;
         gasLimit = dataCost + SC_CALL_MIN_GAS;
     }
 
@@ -156,7 +157,7 @@ export async function pay(input: PayInput): Promise<string> {
     gasLimit += RELAYED_V3_EXTRA_GAS;
 
     const tx = new Transaction({
-        nonce: account.nonce,
+        nonce: BigInt(account.nonce),
         value: value,
         receiver: new Address(request.target),
         gasLimit: BigInt(gasLimit),
@@ -167,8 +168,8 @@ export async function pay(input: PayInput): Promise<string> {
     });
 
     // 6. Sign
-    const signature = await signer.sign(tx.serializeForSigning());
-    tx.applySignature(signature);
+    const signature = await signer.sign(txComputer.computeBytesForSigning(tx));
+    tx.signature = signature;
 
     // 7. Send to Relayer
     const response = await axios.post(`${relayerUrl}/transaction/send`, {
