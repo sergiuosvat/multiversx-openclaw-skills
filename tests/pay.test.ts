@@ -53,7 +53,7 @@ MOCK_PEM_CONTENT
         });
 
         // Check discovery call
-        expect(axios.get).toHaveBeenCalledWith('http://relayer/config');
+        expect(axios.get).toHaveBeenCalledWith(`http://relayer/relayer/address/${mockAddress}`);
 
         // Check transaction construction uses discovered address
         const postCall = (axios.post as jest.Mock).mock.calls[0][1];
