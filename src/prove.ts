@@ -19,6 +19,7 @@ interface ProveInput {
  */
 export async function prove(input: ProveInput): Promise<string> {
     const txComputer = new TransactionComputer();
+    const RELAYED_V3_EXTRA_GAS = 50_000n;
     const pemPath = input.walletPath || process.env.MULTIVERSX_PRIVATE_KEY;
     if (!pemPath) throw new Error("Wallet path not found");
 
@@ -54,18 +55,37 @@ export async function prove(input: ProveInput): Promise<string> {
         tx.nonce = 0n;
     }
 
-    const signature = await signer.sign(txComputer.computeBytesForSigning(tx));
-    tx.signature = signature;
-
     // Broadcast via MCP or Relayer
     try {
+        const signature = await signer.sign(txComputer.computeBytesForSigning(tx));
+        tx.signature = signature;
         const response = await axios.post(`${mcpUrl}/transactions`, tx.toPlainObject());
         return response.data.txHash;
     } catch (err: unknown) {
         // Fallback to Relayer if MCP doesn't support direct broadcast
         const relayerUrl = process.env.MULTIVERSX_RELAY_URL;
         if (relayerUrl) {
-            const response = await axios.post(`${relayerUrl}/transaction/send`, {
+            console.log("[MultiversX:Prove] Falling back to Relayer...");
+            // Discover Relayer Address for V3
+            let relayerAddressStr = process.env.MULTIVERSX_RELAYER_ADDRESS;
+            if (!relayerAddressStr) {
+                try {
+                    const relayerResp = await axios.get(`${relayerUrl}/relayer/address/${signer.getAddress().bech32()}`);
+                    relayerAddressStr = relayerResp.data.relayerAddress;
+                } catch (e) {
+                    console.warn("Could not discover relayer address for V3 fallback");
+                }
+            }
+
+            if (relayerAddressStr) {
+                tx.relayer = new Address(relayerAddressStr);
+                tx.gasLimit += RELAYED_V3_EXTRA_GAS;
+                // Re-sign with relayer field and updated gas
+                const signatureRelayed = await signer.sign(txComputer.computeBytesForSigning(tx));
+                tx.signature = signatureRelayed;
+            }
+
+            const response = await axios.post(`${relayerUrl}/relay`, {
                 transaction: tx.toPlainObject()
             });
             return response.data.txHash;
