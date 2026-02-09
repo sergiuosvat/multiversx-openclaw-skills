@@ -27,17 +27,26 @@ multiversx-openclaw-skills/
 └── package.json
 ```
 
-## Usage
+## Quick Start
 
-### Installation
 ```bash
-npm install
+git clone https://github.com/sasurobert/multiversx-openclaw-skills.git
+cd multiversx-openclaw-skills
+chmod +x setup.sh && ./setup.sh
 ```
 
+The setup script installs dependencies, builds, and runs tests.
+
+### Prerequisites
+
+| Tool | Version | Required |
+|------|---------|----------|
+| Node.js | v18+ | Yes |
+| npm | v9+ | Yes |
+
 ### Testing
-Run the test suite to verify all skills (Gas estimation, Relayer discovery, etc.):
 ```bash
-npm test
+npm test    # Unit tests (jest)
 ```
 
 ### Integration
