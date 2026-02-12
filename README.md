@@ -1,63 +1,80 @@
 # MultiversX OpenClaw Skills
 
-This repository contains the **MultiversX Skill Bundle** for OpenClaw agents. It provides a set of atomic, verifiable "skills" that enable agents to interact with the MultiversX blockchain, make payments, and prove their work.
+Entry point for integrating AI agents with the MultiversX blockchain via [OpenClaw](https://openclaw.io) and the [MX-8004](https://github.com/multiversx/mx-8004) standard.
 
-## Features
+## What's Here
 
-- **Query**: Fetch account data, economics, and trust scores via the Shared MCP Server.
-- **Pay (Relayed V3)**:
-  - Supports **Gasless Transactions** via Relayed V3 protocol.
-  - Automatically discovers Relayer address or accepts configuration.
-  - Supports **MultiESDTNFTTransfer** for all ESDT token payments.
-  - Native EGLD transfers.
-- **Prove**: Submit cryptographic proofs of completed work to the Validation Registry.
-- **Sign**: Secure enclave signing using the agent's identity (PEM).
+This package provides:
+
+- **SKILL.md** — Agent-facing instructions for all MultiversX skills
+- **Reference docs** — Contract endpoints, ABI schemas, flow diagrams
+- **4 Core x402 Skills** — `pay.ts`, `prove.ts`, `query.ts`, `sign.ts`
+- **OASF Taxonomy** — Official skill/domain IDs for agent manifests
+- **Install script** — One-liner that sets up the full skill bundle
+
+## Where's the Implementation Code?
+
+The expanded skill implementations (identity, validation, reputation, escrow, transfers, discovery, hiring, manifest) live in **[moltbot-starter-kit](https://github.com/multiversx/moltbot-starter-kit)**. The install script automatically pulls it.
+
+## Quick Install
+
+```bash
+curl -sL https://raw.githubusercontent.com/multiversx/multiversx-openclaw-skills/main/scripts/install.sh | bash
+```
+
+This downloads:
+1. `SKILL.md` + reference docs → `.agent/skills/multiversx/`
+2. `moltbot-starter-kit` → `.agent/skills/multiversx/moltbot-starter-kit/`
 
 ## Structure
 
 ```
 multiversx-openclaw-skills/
+├── SKILL.md               ← Agent instructions
+├── references/            ← Contract reference docs
+│   ├── setup.md
+│   ├── identity.md
+│   ├── validation.md
+│   ├── reputation.md
+│   ├── escrow.md
+│   ├── x402.md
+│   └── manifest.md
 ├── src/
-│   ├── pay.ts        # x402 Payment & Relayed V3 Logic
-│   ├── query.ts      # Data fetching via MCP
-│   ├── prove.ts      # Work validation
-│   └── sign.ts       # Secure signing
-├── tests/            # Unit tests (Jest)
-├── SKILL.md          # Skill definitions and prompts
-└── package.json
+│   ├── pay.ts             ← x402 payment skill
+│   ├── prove.ts           ← Submit proof of work
+│   ├── query.ts           ← Query contract views
+│   ├── sign.ts            ← Transaction signing
+│   ├── constants.ts       ← Shared constants
+│   └── oasf_taxonomy.ts   ← OASF skill/domain taxonomy
+├── scripts/
+│   ├── install.sh         ← One-liner installer
+│   ├── build_manifest.ts  ← Manifest builder
+│   └── pin_manifest.ts    ← IPFS pinning (Pinata)
+└── tests/
 ```
 
-## Quick Start
+## Core x402 Skills
 
-```bash
-git clone https://github.com/sasurobert/multiversx-openclaw-skills.git
-cd multiversx-openclaw-skills
-chmod +x setup.sh && ./setup.sh
-```
+| Skill | Description |
+|:------|:-----------|
+| `pay.ts` | Submit x402 payments via the Facilitator |
+| `prove.ts` | Submit proof of completed work to the Validation Registry |
+| `query.ts` | Query smart contract views (identity, validation, reputation) |
+| `sign.ts` | Sign arbitrary data with the agent's private key |
 
-The setup script installs dependencies, builds, and runs tests.
+## Expanded Skills (in moltbot-starter-kit)
 
-### Prerequisites
-
-| Tool | Version | Required |
-|------|---------|----------|
-| Node.js | v18+ | Yes |
-| npm | v9+ | Yes |
-
-### Testing
-```bash
-npm test    # Unit tests (jest)
-```
-
-### Integration
-This bundle is designed to be used by the **Moltbot Starter Kit** or any OpenClaw-compatible agent runtime.
-
-## Configuration
-Define the following environment variables:
-- `MULTIVERSX_PRIVATE_KEY`: Path to `wallet.pem`.
-- `MULTIVERSX_MCP_URL`: URL of the MCP Server (default: `http://localhost:3000`).
-- `MULTIVERSX_RELAY_URL`: URL of the Relayer Service.
-- `MULTIVERSX_RELAYER_ADDRESS`: (Optional) Address of the relayer for V3 transactions. If omitted, will auto-discover from `RELAY_URL`.
+| Skill | Description |
+|:------|:-----------|
+| `identity_skills.ts` | Register, update, query agents |
+| `validation_skills.ts` | Job lifecycle — init, proof, verify |
+| `reputation_skills.ts` | Feedback and reputation queries |
+| `escrow_skills.ts` | Deposit, release, refund escrow |
+| `transfer_skills.ts` | EGLD, ESDT, NFT, multi-transfer |
+| `discovery_skills.ts` | Agent discovery and balance queries |
+| `hire_skills.ts` | Composite: init_job + escrow deposit |
+| `manifest_skills.ts` | Build registration manifests with OASF validation |
 
 ## License
+
 MIT
