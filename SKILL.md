@@ -17,17 +17,17 @@ mkdir -p .agent/skills/multiversx/references
 mkdir -p .agent/skills/multiversx/scripts
 
 # Core Skill
-curl -sL https://raw.githubusercontent.com/multiversx/multiversx-openclaw-skills/main/SKILL.md \
+curl -sL https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills/main/SKILL.md \
   > .agent/skills/multiversx/SKILL.md
 
 # Reference Manuals
 for f in setup identity validation reputation escrow x402 manifest; do
-  curl -sL "https://raw.githubusercontent.com/multiversx/multiversx-openclaw-skills/main/references/${f}.md" \
+  curl -sL "https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills/main/references/${f}.md" \
     > ".agent/skills/multiversx/references/${f}.md"
 done
 
 # Install Script
-curl -sL https://raw.githubusercontent.com/multiversx/multiversx-openclaw-skills/main/scripts/install.sh \
+curl -sL https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills/main/scripts/install.sh \
   > .agent/skills/multiversx/scripts/install.sh
 chmod +x .agent/skills/multiversx/scripts/install.sh
 ```

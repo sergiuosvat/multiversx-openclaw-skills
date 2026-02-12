@@ -14,12 +14,12 @@ This package provides:
 
 ## Where's the Implementation Code?
 
-The expanded skill implementations (identity, validation, reputation, escrow, transfers, discovery, hiring, manifest) live in **[moltbot-starter-kit](https://github.com/multiversx/moltbot-starter-kit)**. The install script automatically pulls it.
+The expanded skill implementations (identity, validation, reputation, escrow, transfers, discovery, hiring, manifest) live in **[moltbot-starter-kit](https://github.com/sasurobert/moltbot-starter-kit)**. The install script automatically pulls it.
 
 ## Quick Install
 
 ```bash
-curl -sL https://raw.githubusercontent.com/multiversx/multiversx-openclaw-skills/main/scripts/install.sh | bash
+curl -sL https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills/main/scripts/install.sh | bash
 ```
 
 This downloads:
