@@ -8,18 +8,17 @@ This package provides:
 
 - **SKILL.md** — Agent-facing instructions for all MultiversX skills
 - **Reference docs** — Contract endpoints, ABI schemas, flow diagrams
-- **4 Core x402 Skills** — `pay.ts`, `prove.ts`, `query.ts`, `sign.ts`
 - **OASF Taxonomy** — Official skill/domain IDs for agent manifests
-- **Install script** — One-liner that sets up the full skill bundle
+- **Install script** — One-liner that sets up the full skill bundle + moltbot-starter-kit
 
 ## Where's the Implementation Code?
 
-The expanded skill implementations (identity, validation, reputation, escrow, transfers, discovery, hiring, manifest) live in **[moltbot-starter-kit](https://github.com/sasurobert/moltbot-starter-kit)**. The install script automatically pulls it.
+All TypeScript implementations (identity, validation, reputation, escrow, transfers, discovery, hiring, manifest, x402 signing) live in **[moltbot-starter-kit](https://github.com/sasurobert/moltbot-starter-kit)**. The install script automatically pulls it.
 
 ## Quick Install
 
 ```bash
-curl -sL https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills/main/scripts/install.sh | bash
+curl -sL https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills/refs/heads/master/scripts/install.sh | bash
 ```
 
 This downloads:
@@ -31,6 +30,10 @@ This downloads:
 ```
 multiversx-openclaw-skills/
 ├── SKILL.md               ← Agent instructions
+├── SKILL_BUNDLE_GUIDE.md   ← API reference guide
+├── README.md
+├── config.schema.json
+├── setup.sh
 ├── references/            ← Contract reference docs
 │   ├── setup.md
 │   ├── identity.md
@@ -39,30 +42,11 @@ multiversx-openclaw-skills/
 │   ├── escrow.md
 │   ├── x402.md
 │   └── manifest.md
-├── src/
-│   ├── pay.ts             ← x402 payment skill
-│   ├── prove.ts           ← Submit proof of work
-│   ├── query.ts           ← Query contract views
-│   ├── sign.ts            ← Transaction signing
-│   ├── constants.ts       ← Shared constants
-│   └── oasf_taxonomy.ts   ← OASF skill/domain taxonomy
-├── scripts/
-│   ├── install.sh         ← One-liner installer
-│   ├── build_manifest.ts  ← Manifest builder
-│   └── pin_manifest.ts    ← IPFS pinning (Pinata)
-└── tests/
+└── scripts/
+    └── install.sh         ← One-liner installer (clones moltbot-starter-kit)
 ```
 
-## Core x402 Skills
-
-| Skill | Description |
-|:------|:-----------|
-| `pay.ts` | Submit x402 payments via the Facilitator |
-| `prove.ts` | Submit proof of completed work to the Validation Registry |
-| `query.ts` | Query smart contract views (identity, validation, reputation) |
-| `sign.ts` | Sign arbitrary data with the agent's private key |
-
-## Expanded Skills (in moltbot-starter-kit)
+## Skills (in moltbot-starter-kit)
 
 | Skill | Description |
 |:------|:-----------|
@@ -74,6 +58,7 @@ multiversx-openclaw-skills/
 | `discovery_skills.ts` | Agent discovery and balance queries |
 | `hire_skills.ts` | Composite: init_job + escrow deposit |
 | `manifest_skills.ts` | Build registration manifests with OASF validation |
+| `oasf_taxonomy.ts` | OASF skill/domain taxonomy (v0.8.0) |
 
 ## License
 

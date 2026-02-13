@@ -13,7 +13,7 @@ set -euo pipefail
 
 OPENCLAW_REPO="sasurobert/multiversx-openclaw-skills"
 MOLTBOT_REPO="sasurobert/moltbot-starter-kit"
-BRANCH="main"
+BRANCH="master"
 OPENCLAW_URL="https://raw.githubusercontent.com/${OPENCLAW_REPO}/${BRANCH}"
 
 SKILL_DIR=".agent/skills/multiversx"

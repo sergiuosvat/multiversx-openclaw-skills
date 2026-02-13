@@ -6,7 +6,7 @@ This guide provides a comprehensive reference for the **MultiversX OpenClaw Skil
 
 Install the skills bundle using the install script:
 ```bash
-curl -sL https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills/main/scripts/install.sh | bash
+curl -sL https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills/refs/heads/master/scripts/install.sh | bash
 ```
 
 This installs:

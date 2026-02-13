@@ -17,17 +17,17 @@ mkdir -p .agent/skills/multiversx/references
 mkdir -p .agent/skills/multiversx/scripts
 
 # Core Skill
-curl -sL https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills/main/SKILL.md \
+curl -sL https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills/refs/heads/master/SKILL.md \
   > .agent/skills/multiversx/SKILL.md
 
 # Reference Manuals
 for f in setup identity validation reputation escrow x402 manifest; do
-  curl -sL "https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills/main/references/${f}.md" \
+  curl -sL "https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills/refs/heads/master/references/${f}.md" \
     > ".agent/skills/multiversx/references/${f}.md"
 done
 
 # Install Script
-curl -sL https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills/main/scripts/install.sh \
+curl -sL https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills/refs/heads/master/scripts/install.sh \
   > .agent/skills/multiversx/scripts/install.sh
 chmod +x .agent/skills/multiversx/scripts/install.sh
 ```
@@ -213,7 +213,7 @@ Retrieval Augmented Generation · Tool Interaction · NLP · Code Generation · 
 **16 Domain Categories** (204 items):
 Finance & Business · Healthcare · Legal · Education · Creative Arts · Engineering · Research · DevOps · Marketing · Customer Support · Supply Chain · Real Estate · Agriculture · Energy · Gaming · Cybersecurity
 
-Full taxonomy: [oasf-taxonomy.ts](https://github.com/multiversx/mx-8004-explorer/blob/main/src/data/mock/oasf-taxonomy.ts)
+Full taxonomy: [oasf_taxonomy.ts](https://github.com/sasurobert/moltbot-starter-kit/blob/master/src/skills/oasf_taxonomy.ts)
 
 ---
 

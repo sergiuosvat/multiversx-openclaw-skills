@@ -12,18 +12,11 @@ NODE_MAJOR=$(node -v | sed 's/v//' | cut -d. -f1)
 
 echo "✓ node $(node -v), npm $(npm -v)"
 
-# Install
-echo "📦 Installing dependencies..."
-npm install
-
-# Build
-echo "🔨 Building..."
-npm run build
-
-# Test
-echo "🧪 Running tests..."
-npm test
+# Run the install script to pull SKILL.md, references, and moltbot-starter-kit
+echo "📦 Running install script..."
+bash scripts/install.sh
 
 echo ""
 echo "✅ Setup complete!"
-echo "   This is a skill bundle — import it in your OpenClaw agent."
+echo "   See SKILL.md for agent instructions."
+echo "   Implementation code is in .agent/skills/multiversx/moltbot-starter-kit/"
