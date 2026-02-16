@@ -17,13 +17,26 @@ All TypeScript implementations (identity, validation, reputation, escrow, transf
 
 ## Quick Install
 
+### 1. Install the Skills Bundle
+
+Run the one-liner to download the skills and the starter kit:
+
 ```bash
 curl -sL https://raw.githubusercontent.com/sergiuosvat/multiversx-openclaw-skills/refs/heads/master/scripts/install.sh | bash
 ```
 
-This downloads:
-1. `SKILL.md` + reference docs → `.agent/skills/multiversx/`
-2. `moltbot-starter-kit` → `.agent/skills/multiversx/moltbot-starter-kit/`
+This will download:
+- `SKILL.md` + reference docs → `.agent/skills/multiversx/`
+- `moltbot-starter-kit` → `.agent/skills/multiversx/moltbot-starter-kit/`
+
+### 2. Configure the Starter Kit
+
+Navigate to the installed starter kit and follow the **Quick Start** guide in its `README.md` to set up your agent:
+
+```bash
+cd .agent/skills/multiversx/moltbot-starter-kit/
+cat README.md
+```
 
 ## Structure
 
