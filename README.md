@@ -22,7 +22,7 @@ All TypeScript implementations (identity, validation, reputation, escrow, transf
 Run the one-liner to download the skills and the starter kit:
 
 ```bash
-curl -sL https://raw.githubusercontent.com/sergiuosvat/multiversx-openclaw-skills/refs/heads/master/scripts/install.sh | bash
+curl -sL https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills/refs/heads/master/scripts/install.sh | bash
 ```
 
 This will download:
