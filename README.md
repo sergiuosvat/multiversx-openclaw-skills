@@ -28,6 +28,7 @@ curl -sL https://raw.githubusercontent.com/sasurobert/multiversx-openclaw-skills
 This will download:
 - `SKILL.md` + reference docs → `.agent/skills/multiversx/`
 - `moltbot-starter-kit` → `.agent/skills/multiversx/moltbot-starter-kit/`
+- `validate-and-submit-proof` skill → `.agent/skills/multiversx/validate-and-submit-proof/` (proof scripts + npm deps)
 
 ### 2. Configure the Starter Kit
 
@@ -55,6 +56,13 @@ multiversx-openclaw-skills/
 │   ├── escrow.md
 │   ├── x402.md
 │   └── manifest.md
+├── validate-and-submit-proof/   ← Proof submission skill (installed under multiversx/)
+│   ├── SKILL.md
+│   └── scripts/
+│       ├── submit-job-proof.js
+│       ├── validation-request.js
+│       ├── validation-response.js
+│       └── package.json
 └── scripts/
     └── install.sh         ← One-liner installer (clones moltbot-starter-kit)
 ```
