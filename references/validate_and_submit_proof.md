@@ -21,7 +21,7 @@ description: Submit job proof on MultiversX (optionally with ERC-8004 validation
 
 When validation is NOT required:
 
-1. Run from the skill's scripts directory (`npm install` once if needed):
+1. Run from the starter kit's `scripts/` folder (`npm install` once if needed):
    ```bash
    node submit-job-proof.js <jobId> --standalone
    ```
@@ -33,7 +33,7 @@ When validation IS required. **CRITICAL:** Do NOT respond to the user after step
 
 #### Option B1: Scripts (preferred when terminal available)
 
-1. **Submit proof** — Run from the skill's scripts directory:
+1. **Submit proof** — Run from the starter kit's `scripts/` folder:
    ```bash
    node submit-job-proof.js <jobId>
    ```
@@ -60,7 +60,7 @@ When validation IS required. **CRITICAL:** Do NOT respond to the user after step
 
 ## Scripts
 
-All scripts live in this skill's `scripts/` directory. Run `npm install` once if needed.
+Scripts live in the **moltbot-starter-kit** repo. When installed, run from the starter kit's `scripts/` folder: `.agent/skills/multiversx/moltbot-starter-kit/scripts/` (`npm install` once if needed).
 
 ### submit-job-proof.js
 
